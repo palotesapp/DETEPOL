@@ -298,6 +298,10 @@ input[type="time"] {
                 border:none; border-radius:6px; font-weight:bold; text-align:center;">
     📂 CARGAR XLSX
   </label>
+	<button type="button" onclick="location.reload();" 
+          style="background:#007bff; color:white; padding:.75rem 1rem; font-size:16px; 
+                 cursor:pointer; display:block; width:100%; 
+                 border:none; border-radius:6px; font-weight:bold; text-align:center;">
 
   <!-- Botón Refrescar -->
   <button type="button" onclick="location.reload();" 
@@ -446,8 +450,8 @@ function setSelectWithInput(selectName, excelValue) {
   select.dispatchEvent(new Event("change"));
 }
 
-    // Cargar Excel previo
-    async function cargarExcel() {
+  // Cargar Excel previo
+async function cargarExcel() {
   const input = document.getElementById("fileInputXLSX");
   input.click();
 
@@ -502,40 +506,15 @@ function setSelectWithInput(selectName, excelValue) {
 
       document.getElementById("message").innerText = "✅ XLSX cargado y formulario rellenado";
 
-// ✅ TRUCO: vaciar input para que la próxima vez dispare onchange aunque elijas el mismo archivo
-      event.target.value = "";
-    };
-    reader.readAsArrayBuffer(file);
-  } catch(err) {
-    console.error(err);
-    document.getElementById("message").innerText = "❌ Error al cargar XLSX: " + (err?.message || err);
-  }
-}
-		
-    } catch (err) {
+      // ✅ TRUCO: limpiar para que la próxima vez funcione aunque elijas el mismo archivo
+      e.target.value = "";
+
+    } catch(err) {
       console.error(err);
       document.getElementById("message").innerText = "❌ Error al cargar XLSX: " + (err?.message || err);
     }
   };
 }
-
-    // Guardar con File System Access (evita MOTW)
-    async function saveBlob(blob, filename){
-      if(window.showSaveFilePicker){
-        try{
-          const handle=await window.showSaveFilePicker({
-            suggestedName:filename,
-            types:[{description:'Archivo ZIP',accept:{'application/zip':['.zip']}}]
-          });
-          const writable=await handle.createWritable();
-          await writable.write(blob); await writable.close(); return;
-        }catch(e){console.warn('FSA fallback',e);}
-      }
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);
-      a.click(); setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1500);
-    }
-
     // Generar ODT con reemplazos en MAYÚSCULAS
     async function generarODTUint8(base64,dataUpper){
       const bytes=Uint8Array.from(atob(base64.replace(/[\r\n\t ]+/g,"")),c=>c.charCodeAt(0));
@@ -1006,6 +985,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
