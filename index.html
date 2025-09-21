@@ -15,7 +15,6 @@
   <script src="./jszip.min.js"></script>
   <script src="./FileSaver.min.js"></script>
   <script src="xlsx.full.min.js"></script>
-  <script src="https://gildas-lormeau.github.io/zip.js/demos/dist/zip.min.js"></script>
 
   <!-- Plantillas Base64: deben definir window.PLANTILLAS con claves:
        { amarillas, azules, fax, derechos_ingles, derechos_espanol } -->
@@ -272,43 +271,36 @@ input[type="time"] {
     </div>
 
 <div class="actions">
-  <!-- Input oculto para seleccionar XLSX -->
   <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none">
 
-  <!-- Botón Descarga de ZIP -->
+  <!-- Botón DESCARGA ZIP (teal con icono) -->
   <button type="button" onclick="generarZipUnicoSeguro()" 
-          style="background:teal; color:white; padding:.75rem 1rem; font-size:16px; 
-                 cursor:pointer; display:block; width:100%; margin-bottom:15px; 
-                 border:none; border-radius:6px; font-weight:bold; text-align:center;">
-    🗂 DESCARGA DE ZIP
+          style="background: teal; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
+                 border: none; border-radius: 5px;">
+    🗂 Descarga de ZIP
   </button>
 
-  <!-- Botón ZIP Cifrado -->
-  <button type="button" onclick="downloadZipEncrypted()" 
-          style="background:orange; color:white; padding:.75rem 1rem; font-size:16px; 
-                 cursor:pointer; display:block; width:100%; margin-bottom:15px; 
-                 border:none; border-radius:6px; font-weight:bold; text-align:center;">
-    🔒 DESCARGAR ZIP CIFRADO
+  <!-- Botón CARGAR XLSX (verde con icono de carpeta) -->
+  <button type="button" onclick="cargarExcel()" 
+          style="background: #28a745; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
+                 border: none; border-radius: 5px;">
+    📂 Cargar XLSX
   </button>
 
-  <!-- Botón Cargar XLSX (usa el input oculto) -->
-  <label for="fileInputXLSX"
-         style="background:#28a745; color:white; padding:.75rem 1rem; font-size:16px; 
-                cursor:pointer; display:block; width:100%; margin-bottom:15px;
-                border:none; border-radius:6px; font-weight:bold; text-align:center;">
-    📂 CARGAR XLSX
-  </label>
-
-  <!-- Botón Refrescar -->
+  <!-- Botón REFRESCAR (azul con icono de recarga) -->
   <button type="button" onclick="location.reload();" 
-          style="background:#007bff; color:white; padding:.75rem 1rem; font-size:16px; 
-                 cursor:pointer; display:block; width:100%; 
-                 border:none; border-radius:6px; font-weight:bold; text-align:center;">
-    🔄 REFRESCAR
+          style="background: #007bff; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; 
+                 border: none; border-radius: 5px;">
+    🔄 Refrescar
   </button>
 </div>
 
-<div id="message" style="margin-top:10px; font-weight:bold; text-align:center; color:white;"></div>
+<div id="message"></div>
+</form>
+
   <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none;">
 
   <script>
@@ -444,11 +436,12 @@ function setSelectWithInput(selectName, excelValue) {
   select.dispatchEvent(new Event("change"));
 }
 
- <script>
-document.addEventListener("DOMContentLoaded", () => {
+    // Cargar Excel previo
+    async function cargarExcel() {
   const input = document.getElementById("fileInputXLSX");
+  input.click();
 
-  input.addEventListener("change", async (e) => {
+  input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -481,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // ---- Campos simples ----
+        // ---- Campos simples (input/select/textarea) ----
         const allInputs = document.querySelectorAll("[name]");
         for (const el of allInputs) {
           const elNorm = normalizeKey(el.name);
@@ -498,17 +491,30 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       document.getElementById("message").innerText = "✅ XLSX cargado y formulario rellenado";
-
     } catch (err) {
       console.error(err);
       document.getElementById("message").innerText = "❌ Error al cargar XLSX: " + (err?.message || err);
-    } finally {
-      // ✅ muy importante: limpiar siempre
-      e.target.value = "";
     }
-  });
-});
-</script>
+  };
+}
+
+    // Guardar con File System Access (evita MOTW)
+    async function saveBlob(blob, filename){
+      if(window.showSaveFilePicker){
+        try{
+          const handle=await window.showSaveFilePicker({
+            suggestedName:filename,
+            types:[{description:'Archivo ZIP',accept:{'application/zip':['.zip']}}]
+          });
+          const writable=await handle.createWritable();
+          await writable.write(blob); await writable.close(); return;
+        }catch(e){console.warn('FSA fallback',e);}
+      }
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);
+      a.click(); setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1500);
+    }
+
     // Generar ODT con reemplazos en MAYÚSCULAS
     async function generarODTUint8(base64,dataUpper){
       const bytes=Uint8Array.from(atob(base64.replace(/[\r\n\t ]+/g,"")),c=>c.charCodeAt(0));
@@ -937,18 +943,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 </script>
 
-	<script>
- 
-  // Descargar ZIP cifrado (simulado: para cifrado real haría falta otra librería como zip.js)
-  function downloadZipEncrypted() {
-    var zip = new JSZip();
-    zip.file("ejemplo-seguro.txt", "🔒 Contenido protegido (simulado)");
-    zip.generateAsync({type:"blob"}).then(content=>{
-      saveAs(content, "documentos_protegidos.zip");
-    });
-  }
-</script>
-
 <style>
   body {
     font-family: sans-serif;
@@ -979,10 +973,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
-
-
-
-
-
-
-
