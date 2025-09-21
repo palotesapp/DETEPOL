@@ -500,6 +500,17 @@ function setSelectWithInput(selectName, excelValue) {
       });
 
       document.getElementById("message").innerText = "✅ XLSX cargado y formulario rellenado";
+
+// ✅ TRUCO: vaciar input para que la próxima vez dispare onchange aunque elijas el mismo archivo
+      event.target.value = "";
+    };
+    reader.readAsArrayBuffer(file);
+  } catch(err) {
+    console.error(err);
+    document.getElementById("message").innerText = "❌ Error al cargar XLSX: " + (err?.message || err);
+  }
+}
+		
     } catch (err) {
       console.error(err);
       document.getElementById("message").innerText = "❌ Error al cargar XLSX: " + (err?.message || err);
@@ -994,5 +1005,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
