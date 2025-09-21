@@ -924,42 +924,45 @@ msg.innerText=`✅ ZIP generado (${ok} ODT + XLSX)`;
     }
 
 // Generar ZIP cifrado con contraseña fija "palote789133"
-<input type="file" id="fileInput" multiple>
-<button onclick="generarZipCifrado()">Generar ZIP Cifrado</button>
-<p id="message"></p>
-<script src="./zip-full.min.js"></script>
-<script>
 async function generarZipCifrado() {
   const msg = document.getElementById("message");
-  msg.innerText = "Generando ZIP…";
+  msg.innerText = "Generando ZIP cifrado...";
 
   try {
-    const files = document.getElementById("fileInput").files;
+    // Crear el ZIP cifrado
     const blobWriter = new zip.BlobWriter("application/zip");
     const writer = new zip.ZipWriter(blobWriter);
 
-    // meter todos los que seleccione el usuario
-    for (const file of files) {
-      await writer.add(file.name, new zip.BlobReader(file), {
-        password: "palote789133",
-        encryptionStrength: 3
-      });
-    }
+    // Ejemplo: añadir algunos archivos de prueba
+    // (aquí pondrías tus documentos reales generados)
+    
+    // Archivo 1: texto de ejemplo
+    await writer.add("documento1.txt", new zip.TextReader("Contenido del documento 1"), {
+      password: "palote789133",
+      encryptionStrength: 3
+    });
 
+    // Archivo 2: otro texto de ejemplo  
+    await writer.add("documento2.txt", new zip.TextReader("Contenido del documento 2"), {
+      password: "palote789133", 
+      encryptionStrength: 3
+    });
+
+    // Cerrar y descargar
     const zipBlob = await writer.close();
     const a = document.createElement("a");
     a.href = URL.createObjectURL(zipBlob);
     a.download = "documentos_protegidos.zip";
     a.click();
 
-    msg.innerText = "✅ ZIP cifrado creado (AES-256)";
+    msg.innerText = "✅ ZIP cifrado generado con contraseña 'palote789133'";
   } catch (error) {
     console.error(error);
     msg.innerText = "❌ Error: " + (error.message || error);
   }
 }
-</script>
 <script>
+	<script>
 document.addEventListener("DOMContentLoaded", function () {
   const hoy = new Date();
   const dia = String(hoy.getDate()).padStart(2, '0');
@@ -1018,6 +1021,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
