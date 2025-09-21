@@ -291,13 +291,16 @@ input[type="time"] {
     🔒 DESCARGAR ZIP CIFRADO
   </button>
 
-  <!-- Botón Cargar XLSX (usa el input oculto) -->
-  <label for="fileInputXLSX" 
-         style="background:#28a745; color:white; padding:.75rem 1rem; font-size:16px; 
-                cursor:pointer; display:block; width:100%; margin-bottom:15px;
-                border:none; border-radius:6px; font-weight:bold; text-align:center;">
-    📂 CARGAR XLSX
-  </label>
+  <!-- Input oculto -->
+<input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none">
+
+<!-- Botón Cargar XLSX -->
+<label for="fileInputXLSX"
+       style="background:#28a745; color:white; padding:.75rem 1rem; font-size:16px; 
+              cursor:pointer; display:block; width:100%; margin-bottom:15px;
+              border:none; border-radius:6px; font-weight:bold; text-align:center;">
+  📂 CARGAR XLSX
+</label>
 	<button type="button" onclick="location.reload();" 
           style="background:#007bff; color:white; padding:.75rem 1rem; font-size:16px; 
                  cursor:pointer; display:block; width:100%; 
@@ -450,12 +453,11 @@ function setSelectWithInput(selectName, excelValue) {
   select.dispatchEvent(new Event("change"));
 }
 
-  // Cargar Excel previo
-async function cargarExcel() {
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("fileInputXLSX");
-  input.click();
 
-  input.onchange = async (e) => {
+  input.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -488,7 +490,7 @@ async function cargarExcel() {
           return;
         }
 
-        // ---- Campos simples (input/select/textarea) ----
+        // ---- Campos simples ----
         const allInputs = document.querySelectorAll("[name]");
         for (const el of allInputs) {
           const elNorm = normalizeKey(el.name);
@@ -506,15 +508,16 @@ async function cargarExcel() {
 
       document.getElementById("message").innerText = "✅ XLSX cargado y formulario rellenado";
 
-      // ✅ TRUCO: limpiar para que la próxima vez funcione aunque elijas el mismo archivo
-      e.target.value = "";
-
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       document.getElementById("message").innerText = "❌ Error al cargar XLSX: " + (err?.message || err);
+    } finally {
+      // ✅ muy importante: limpiar siempre
+      e.target.value = "";
     }
-  };
-}
+  });
+});
+</script>
     // Generar ODT con reemplazos en MAYÚSCULAS
     async function generarODTUint8(base64,dataUpper){
       const bytes=Uint8Array.from(atob(base64.replace(/[\r\n\t ]+/g,"")),c=>c.charCodeAt(0));
@@ -985,6 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
