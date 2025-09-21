@@ -929,33 +929,36 @@ async function generarZipCifrado() {
   msg.innerText = "Generando ZIP cifrado...";
 
   try {
-    // Crear escritor de blob (archivo en memoria)
+    // Writer para generar el ZIP como Blob
     const blobWriter = new zip.BlobWriter("application/zip");
-
-    // Crear ZipWriter con contraseña
+    
+    // Crear el escritor de ZIP con contraseña AES
     const writer = new zip.ZipWriter(blobWriter, {
+      password: "palote789133",       // 🔒 contraseña real
+      encryptionStrength: 3           // nivel AES (1=128bit, 2=192bit, 3=256bit)
+    });
+
+    // Añadir archivo de texto dentro del ZIP
+    await writer.add("ejemplo.txt", new zip.TextReader("Contenido protegido"), {
       password: "palote789133"
     });
 
-    // Añadir un archivo de prueba dentro del ZIP
-    await writer.add("ejemplo_protegido.txt", new zip.TextReader("Contenido protegido dentro de ZIP cifrado."));
+    // Cerrar y obtener ZIP
+    const blob = await writer.close();
 
-    // Cerrar escritura
-    await writer.close();
-
-    // Obtener blob final y disparar descarga
-    const blob = await blobWriter.getData();
+    // Preparar descarga
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "documentos_protegidos.zip";
     a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
 
     msg.innerText = "✅ ZIP cifrado generado con contraseña 'palote789133'";
   } catch (err) {
     console.error(err);
-    msg.innerText = "❌ Error al generar ZIP cifrado: " + (err?.message || err);
+    msg.innerText = "❌ Error: " + (err?.message || err);
   }
 }
 	  
@@ -1019,5 +1022,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
