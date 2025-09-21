@@ -271,38 +271,39 @@ input[type="time"] {
     </div>
 
 <div class="actions">
-  <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none">
+  <!-- Input oculto para seleccionar XLSX -->
+  <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none" onchange="cargarExcel(event)">
 
-  <!-- Botón DESCARGA ZIP (teal con icono) -->
+  <!-- Botón Descarga de ZIP -->
   <button type="button" onclick="generarZipUnicoSeguro()" 
           style="background: teal; color: white; padding: .5rem 1rem; font-size: 16px; 
                  cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
-                 border: none; border-radius: 5px;">
-    🗂 Descarga de ZIP
+                 border: none; border-radius: 5px; font-weight:bold;">
+    🗂 DESCARGA DE ZIP
   </button>
 
-  <!-- Botón CARGAR XLSX (verde con icono de carpeta) -->
-  <button type="button" onclick="cargarExcel()" 
-          style="background: #28a745; color: white; padding: .5rem 1rem; font-size: 16px; 
-                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
-                 border: none; border-radius: 5px;">
-
-<button type="button" onclick="downloadZipEncrypted()" 
-        style="background: orange; color: white; padding: .5rem 1rem; font-size: 16px; 
-               cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
-               border: none; border-radius: 5px;">
-  🔒 Descargar ZIP cifrado
-</button>
-	  
-    📂 Cargar XLSX
+  <!-- Botón ZIP Cifrado -->
+  <button type="button" onclick="downloadZipEncrypted()" 
+          style="background: orange; color: white; padding: .5rem 1rem; font-size:16px; 
+                 cursor: pointer; display:block; width:100%; margin-bottom:20px; 
+                 border:none; border-radius:5px; font-weight:bold;">
+    🔒 DESCARGAR ZIP CIFRADO
   </button>
 
-  <!-- Botón REFRESCAR (azul con icono de recarga) -->
+  <!-- Botón Cargar XLSX (usa label que dispara el input oculto) -->
+  <label for="fileInputXLSX" 
+         style="background:#28a745; color:white; padding:.5rem 1rem; font-size:16px; 
+                cursor:pointer; display:block; width:100%; margin-bottom:20px;
+                border:none; border-radius:5px; text-align:center; font-weight:bold;">
+    📂 CARGAR XLSX
+  </label>
+
+  <!-- Botón Refrescar -->
   <button type="button" onclick="location.reload();" 
-          style="background: #007bff; color: white; padding: .5rem 1rem; font-size: 16px; 
-                 cursor: pointer; display: block; width: 100%; 
-                 border: none; border-radius: 5px;">
-    🔄 Refrescar
+          style="background:#007bff; color:white; padding:.5rem 1rem; font-size:16px; 
+                 cursor:pointer; display:block; width:100%; 
+                 border:none; border-radius:5px; font-weight:bold;">
+    🔄 REFRESCAR
   </button>
 </div>
 
@@ -993,4 +994,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
