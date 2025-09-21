@@ -273,7 +273,7 @@ input[type="time"] {
 
 <div class="actions">
   <!-- Input oculto para seleccionar XLSX -->
-  <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none" onchange="cargarExcel(event)">
+  <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none">
 
   <!-- Botón Descarga de ZIP -->
   <button type="button" onclick="generarZipUnicoSeguro()" 
@@ -283,7 +283,7 @@ input[type="time"] {
     🗂 DESCARGA DE ZIP
   </button>
 
-  <!-- Botón ZIP Cifrado (usará AES real con zip.js) -->
+  <!-- Botón ZIP Cifrado -->
   <button type="button" onclick="downloadZipEncrypted()" 
           style="background:orange; color:white; padding:.75rem 1rem; font-size:16px; 
                  cursor:pointer; display:block; width:100%; margin-bottom:15px; 
@@ -291,20 +291,13 @@ input[type="time"] {
     🔒 DESCARGAR ZIP CIFRADO
   </button>
 
-  <!-- Input oculto -->
-<input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none">
-
-<!-- Botón Cargar XLSX -->
-<label for="fileInputXLSX"
-       style="background:#28a745; color:white; padding:.75rem 1rem; font-size:16px; 
-              cursor:pointer; display:block; width:100%; margin-bottom:15px;
-              border:none; border-radius:6px; font-weight:bold; text-align:center;">
-  📂 CARGAR XLSX
-</label>
-	<button type="button" onclick="location.reload();" 
-          style="background:#007bff; color:white; padding:.75rem 1rem; font-size:16px; 
-                 cursor:pointer; display:block; width:100%; 
-                 border:none; border-radius:6px; font-weight:bold; text-align:center;">
+  <!-- Botón Cargar XLSX (usa el input oculto) -->
+  <label for="fileInputXLSX"
+         style="background:#28a745; color:white; padding:.75rem 1rem; font-size:16px; 
+                cursor:pointer; display:block; width:100%; margin-bottom:15px;
+                border:none; border-radius:6px; font-weight:bold; text-align:center;">
+    📂 CARGAR XLSX
+  </label>
 
   <!-- Botón Refrescar -->
   <button type="button" onclick="location.reload();" 
@@ -315,9 +308,7 @@ input[type="time"] {
   </button>
 </div>
 
-<div id="message"></div>
-</form>
-
+<div id="message" style="margin-top:10px; font-weight:bold; text-align:center; color:white;"></div>
   <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none;">
 
   <script>
@@ -988,6 +979,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
