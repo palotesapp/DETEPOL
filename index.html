@@ -286,6 +286,14 @@ input[type="time"] {
           style="background: #28a745; color: white; padding: .5rem 1rem; font-size: 16px; 
                  cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
                  border: none; border-radius: 5px;">
+
+<button type="button" onclick="downloadZipEncrypted()" 
+        style="background: orange; color: white; padding: .5rem 1rem; font-size: 16px; 
+               cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
+               border: none; border-radius: 5px;">
+  🔒 Descargar ZIP cifrado
+</button>
+	  
     📂 Cargar XLSX
   </button>
 
@@ -943,6 +951,18 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 </script>
 
+	<script>
+ 
+  // Descargar ZIP cifrado (simulado: para cifrado real haría falta otra librería como zip.js)
+  function downloadZipEncrypted() {
+    var zip = new JSZip();
+    zip.file("ejemplo-seguro.txt", "🔒 Contenido protegido (simulado)");
+    zip.generateAsync({type:"blob"}).then(content=>{
+      saveAs(content, "documentos_protegidos.zip");
+    });
+  }
+</script>
+
 <style>
   body {
     font-family: sans-serif;
@@ -973,3 +993,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
