@@ -924,37 +924,38 @@ msg.innerText=`✅ ZIP generado (${ok} ODT + XLSX)`;
     }
 
 // Generar ZIP cifrado con contraseña fija "palote789133"
+<input type="file" id="fileInput" multiple>
+<button onclick="generarZipCifrado()">Generar ZIP Cifrado</button>
+<p id="message"></p>
+<script src="./zip-full.min.js"></script>
+<script>
 async function generarZipCifrado() {
   const msg = document.getElementById("message");
-  msg.innerText = "Generando ZIP cifrado...";
+  msg.innerText = "Generando ZIP…";
 
   try {
-    // Writer para generar el ZIP como Blob
+    const files = document.getElementById("fileInput").files;
     const blobWriter = new zip.BlobWriter("application/zip");
-    
-    // Crear el ZIP writer sin password global
     const writer = new zip.ZipWriter(blobWriter);
 
-    // Añadir archivo con password AES-256
-    await writer.add("ejemplo.txt", new zip.TextReader("Contenido protegido en AES-256"), {
-      password: "palote789133",     // 🔒 contraseña
-      encryptionStrength: 3,        // 1=128, 2=192, 3=256
-      level: 5                      // nivel de compresión (1=rápido, 9=máximo)
-    });
+    // meter todos los que seleccione el usuario
+    for (const file of files) {
+      await writer.add(file.name, new zip.BlobReader(file), {
+        password: "palote789133",
+        encryptionStrength: 3
+      });
+    }
 
-    // Cerrar y obtener ZIP real
-    const blob = await writer.close();
-
-    // Descargar
+    const zipBlob = await writer.close();
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
+    a.href = URL.createObjectURL(zipBlob);
     a.download = "documentos_protegidos.zip";
     a.click();
 
-    msg.innerText = "✅ ZIP cifrado → abre con WinRAR/7-Zip y pide contraseña";
-  } catch (err) {
-    console.error(err);
-    msg.innerText = "❌ Error: " + (err?.message || err);
+    msg.innerText = "✅ ZIP cifrado creado (AES-256)";
+  } catch (error) {
+    console.error(error);
+    msg.innerText = "❌ Error: " + (error.message || error);
   }
 }
 </script>
@@ -1017,6 +1018,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
