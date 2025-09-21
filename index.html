@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Detenidos - Formato Completo Offline</title>
@@ -8,9 +14,10 @@
   <!-- Librerías necesarias -->
   <script src="./jszip.min.js"></script>
   <script src="./FileSaver.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="xlsx.full.min.js"></script>
 
-  <!-- Plantillas Base64: deben definir window.PLANTILLAS con claves -->
+  <!-- Plantillas Base64: deben definir window.PLANTILLAS con claves:
+       { amarillas, azules, fax, derechos_ingles, derechos_espanol } -->
   <script src="./plantilla_amarillas.js"></script>
   <script src="./plantilla_azules.js"></script>
   <script src="./plantilla_fax.js"></script>
@@ -19,7 +26,6 @@
   <script src="./plantilla_derechos_arabe.js"></script>
   <script src="./plantilla_derechos_italiano.js"></script>
   <script src="./plantilla_derechos_ruso.js"></script>
-
   <style>
     :root { --primary:#3498db; --hover:#2980b9; --panel:rgba(0,0,0,0.75); --text:#fff; --field-bg:rgba(255,255,255,0.9); --border:#aaa; --radius:12px; --space:16px; --card-pad:14px; }
     *{box-sizing:border-box}
@@ -35,22 +41,73 @@
     input,select,textarea{width:100%;padding:5px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--field-bg);color:#000;}
     textarea{resize:vertical;min-height:56px;}
     input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(52,152,219,.25);}
-    .actions{text-align:center;margin-top:26px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
-    .btn{background:var(--primary);color:#fff;padding:14px 20px;border:none;border-radius:10px;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;letter-spacing:.6px;}
-    .btn:hover{background:var(--hover);}
+    .actions{text-align:center;margin-top:26px;}
+    button{background:var(--primary);color:#fff;padding:14px 26px;border:none;border-radius:10px;font-weight:800;font-size:15px;text-transform:uppercase;cursor:pointer;letter-spacing:.6px;}
+    button:hover{background:var(--hover);}
     #message{margin-top:12px;text-align:center;font-weight:bold;color:#fff;}
-    .full-width { grid-column: span 3; }
+.full-width {
+      grid-column: span 3;
+    }
+/* Reduce la altura por defecto de todas las tarjetas */
+.field-card {
+  padding: 10px;        /* antes var(--card-pad)=14px */
+  gap: 6px;             /* antes 8px */
+  min-height: 64px;     /* antes 94px */
+}
+textarea {
+  min-height: 34px;     /* altura visible del textarea */
+}
+
+/* Ajuste responsivo para que en móvil los campos de "Hechos" vayan en columna */
+.grid-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.grid-rows .field-card {
+  flex: 1;
+  min-width: 200px; /* así en pantallas grandes aún se ve en fila */
+}
+
+@media (max-width: 768px) {
+  .grid-rows {
+    flex-direction: column;   /* <--- fuerza apilado vertical */
+  }
+  .grid-rows .field-card {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+}
+
+input[type="time"] {
+  width: 100px;   /* lo justo para HH:MM con espacio delante y detrás */
+  text-align: center; /* centra el valor dentro del campo */
+}
+
+	  .field-card input[type="time"] {
+  width: 100px !important;   /* fuerza anchura justa */
+  text-align: center;        /* centra HH:MM */
+  display: inline-block;     /* evita que se estire */
+}
+
+.field-card.small-width {
+  max-width: 160px !important; /* fuerza el ancho del globo */
+  flex: 0 0 160px !important;  /* no dejar que el flex de .grid-rows lo estire */
+}
+.field-card.small-width input[type="time"] {
+  width: 100%; 
+  text-align: center;
+}
+	  
   </style>
+
 </head>
 <body>
   <h1>Registro de Detenidos</h1>
 
   <form id="registroForm" autocomplete="off">
-    
-    <!-- 🚨 Todos los campos tal cual tu versión original 🚨 -->
-    <!-- (ya los incluí antes, no los repito aquí por espacio, pero aquí se mantienen íntegros) -->
-
-	  <h2>Datos de Filiación</h2>
+    <h2>Datos de Filiación</h2>
     <div class="grid-rows">
       <div class="field-card" style="color: lightblue;">
         <label>Tipo Documento</label>
@@ -216,37 +273,38 @@
 <div class="actions">
   <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none">
 
-    <!-- 🔘 BOTONES -->
-    <div class="actions">
-      <!-- Generar ZIP original -->
-      <button type="button" class="btn" style="background-color:#4CAF50;"
-              onclick="generarZipUnicoSeguro()">📝 Generar ZIP</button>
+  <!-- Botón DESCARGA ZIP (teal con icono) -->
+  <button type="button" onclick="generarZipUnicoSeguro()" 
+          style="background: teal; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
+                 border: none; border-radius: 5px;">
+    🗂 Descarga de ZIP
+  </button>
 
-      <!-- ZIP normal -->
-      <button type="button" class="btn" style="background-color:#9c27b0;"
-              onclick="downloadZip()">📦 ZIP Normal</button>
+  <!-- Botón CARGAR XLSX (verde con icono de carpeta) -->
+  <button type="button" onclick="cargarExcel()" 
+          style="background: #28a745; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
+                 border: none; border-radius: 5px;">
+    📂 Cargar XLSX
+  </button>
 
-      <!-- ZIP cifrado -->
-      <button type="button" class="btn" style="background-color:#f57c00;"
-              onclick="downloadZipEncrypted()">🔒 ZIP Cifrado</button>
+  <!-- Botón REFRESCAR (azul con icono de recarga) -->
+  <button type="button" onclick="location.reload();" 
+          style="background: #007bff; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; 
+                 border: none; border-radius: 5px;">
+    🔄 Refrescar
+  </button>
+</div>
 
-      <!-- Cargar Excel -->
-      <label for="excelFile" class="btn" style="background-color:#2196f3;cursor:pointer;">
-        📂 Cargar Excel
-      </label>
-      <input type="file" id="excelFile" accept=".xlsx" style="display:none" onchange="loadExcel(event)">
+<div id="message"></div>
+</form>
 
-      <!-- Refrescar -->
-      <button type="reset" class="btn" style="background-color:#e53935;"
-              onclick="refreshForm()">🔄 Refrescar</button>
-    </div>
+  <input type="file" id="fileInputXLSX" accept=".xlsx" style="display:none;">
 
-    <div id="message"></div>
-  </form>
-
-  <!-- ⚡️ Tus scripts ORIGINALES (todo el bloque enorme intacto) -->
   <script>
-     // Helpers
+    // Helpers
     function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }
     function buildFlexibleRegex(key){
       const chars = key.split("").map(c=>escapeRegExp(c));
@@ -856,49 +914,62 @@ msg.innerText=`✅ ZIP generado (${ok} ODT + XLSX)`;
       }
     }
   </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const hoy = new Date();
+  const dia = String(hoy.getDate()).padStart(2, '0');
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+  const anio = hoy.getFullYear();
+  const fecha = `${dia}/${mes}/${anio}`;
 
-  <!-- 🔧 NUEVAS FUNCIONES -->
-  <script>
-    // Refrescar form
-    function refreshForm() {
-      document.getElementById("registroForm").reset();
-      document.getElementById("message").innerText = "Formulario limpio ✅";
-    }
+  const inputFecha = document.getElementById("fechaGeneracion");
+  if (inputFecha && !inputFecha.value) {
+    inputFecha.value = fecha;
+  }
+});
+</script>
 
-    // ZIP normal
-    function downloadZip() {
-      var zip = new JSZip();
-      zip.file("ejemplo.txt", "Contenido ejemplo sin cifrar");
-      zip.generateAsync({type:"blob"}).then(content=>{
-        saveAs(content, "documentos.zip");
-      });
-    }
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registrado con éxito:', registration);
+        })
+        .catch(error => {
+          console.log('Fallo en el registro del Service Worker:', error);
+        });
+    });
+  }
+</script>
 
-    // ZIP cifrado (simulado)
-    function downloadZipEncrypted() {
-      var zip = new JSZip();
-      zip.file("ejemplo.txt", "🔒 Contenido protegido (simulado)");
-      zip.generateAsync({type:"blob"}).then(content=>{
-        saveAs(content, "documentos_protegidos.zip");
-      });
-    }
-
-    // Cargar Excel
-    function loadExcel(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const wb = XLSX.read(data, {type:"array"});
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet, {header:1});
-        console.log("Excel cargado:", json);
-        document.getElementById("message").innerText = "✅ Excel cargado (ver consola)";
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  </script>
+<style>
+  body {
+    font-family: sans-serif;
+    padding: 10px;
+    margin: 0;
+  }
+  .field-card {
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .field-card label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: .25rem;
+  }
+  .field-card input, .field-card select, .field-card textarea {
+    width: 100%;
+    padding: .5rem;
+    box-sizing: border-box;
+    font-size: 16px; /* para que en iOS no haga zoom raro */
+  }
+  button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 18px;
+  }
+</style>
 
 </body>
 </html>
