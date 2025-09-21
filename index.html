@@ -932,37 +932,32 @@ async function generarZipCifrado() {
     // Writer para generar el ZIP como Blob
     const blobWriter = new zip.BlobWriter("application/zip");
     
-    // Crear el escritor de ZIP con contraseña AES
-    const writer = new zip.ZipWriter(blobWriter, {
-      password: "palote789133",       // 🔒 contraseña real
-      encryptionStrength: 3           // nivel AES (1=128bit, 2=192bit, 3=256bit)
+    // Crear el ZIP writer sin password global
+    const writer = new zip.ZipWriter(blobWriter);
+
+    // Añadir archivo con password AES-256
+    await writer.add("ejemplo.txt", new zip.TextReader("Contenido protegido en AES-256"), {
+      password: "palote789133",     // 🔒 contraseña
+      encryptionStrength: 3,        // 1=128, 2=192, 3=256
+      level: 5                      // nivel de compresión (1=rápido, 9=máximo)
     });
 
-    // Añadir archivo de texto dentro del ZIP
-    await writer.add("ejemplo.txt", new zip.TextReader("Contenido protegido"), {
-      password: "palote789133"
-    });
-
-    // Cerrar y obtener ZIP
+    // Cerrar y obtener ZIP real
     const blob = await writer.close();
 
-    // Preparar descarga
-    const url = URL.createObjectURL(blob);
+    // Descargar
     const a = document.createElement("a");
-    a.href = url;
+    a.href = URL.createObjectURL(blob);
     a.download = "documentos_protegidos.zip";
     a.click();
 
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-
-    msg.innerText = "✅ ZIP cifrado generado con contraseña 'palote789133'";
+    msg.innerText = "✅ ZIP cifrado → abre con WinRAR/7-Zip y pide contraseña";
   } catch (err) {
     console.error(err);
     msg.innerText = "❌ Error: " + (err?.message || err);
   }
 }
-	  
-  </script>
+</script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const hoy = new Date();
@@ -1022,6 +1017,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
