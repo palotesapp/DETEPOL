@@ -15,6 +15,7 @@
   <script src="./jszip.min.js"></script>
   <script src="./FileSaver.min.js"></script>
   <script src="xlsx.full.min.js"></script>
+	<script src="https://gildas-lormeau.github.io/zip.js/demos/dist/zip.min.js"></script>
 
   <!-- Plantillas Base64: deben definir window.PLANTILLAS con claves:
        { amarillas, azules, fax, derechos_ingles, derechos_espanol } -->
@@ -281,6 +282,14 @@ input[type="time"] {
     🗂 Descarga de ZIP
   </button>
 
+	<!-- Botón DESCARGA ZIP CIFRADO -->
+  <button type="button" onclick="generarZipCifrado()" 
+          style="background: orange; color: white; padding: .5rem 1rem; font-size: 16px; 
+                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
+                 border: none; border-radius: 5px;">
+    🔒 Descargar ZIP Cifrado
+  </button>
+	
   <!-- Botón CARGAR XLSX (verde con icono de carpeta) -->
   <button type="button" onclick="cargarExcel()" 
           style="background: #28a745; color: white; padding: .5rem 1rem; font-size: 16px; 
@@ -913,6 +922,43 @@ msg.innerText=`✅ ZIP generado (${ok} ODT + XLSX)`;
         msg.innerText="❌ "+(err?.message||err);
       }
     }
+
+// Generar ZIP cifrado con contraseña fija "palote789133"
+async function generarZipCifrado() {
+  const msg = document.getElementById("message");
+  msg.innerText = "Generando ZIP cifrado...";
+
+  try {
+    // Crear escritor de blob (archivo en memoria)
+    const blobWriter = new zip.BlobWriter("application/zip");
+
+    // Crear ZipWriter con contraseña
+    const writer = new zip.ZipWriter(blobWriter, {
+      password: "palote789133"
+    });
+
+    // Añadir un archivo de prueba dentro del ZIP
+    await writer.add("ejemplo_protegido.txt", new zip.TextReader("Contenido protegido dentro de ZIP cifrado."));
+
+    // Cerrar escritura
+    await writer.close();
+
+    // Obtener blob final y disparar descarga
+    const blob = await blobWriter.getData();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "documentos_protegidos.zip";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+    msg.innerText = "✅ ZIP cifrado generado con contraseña 'palote789133'";
+  } catch (err) {
+    console.error(err);
+    msg.innerText = "❌ Error al generar ZIP cifrado: " + (err?.message || err);
+  }
+}
+	  
   </script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -973,3 +1019,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
