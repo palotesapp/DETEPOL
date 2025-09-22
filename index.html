@@ -15,7 +15,6 @@
   <script src="./jszip.min.js"></script>
   <script src="./FileSaver.min.js"></script>
   <script src="xlsx.full.min.js"></script>
-	<script src="./zip-full.min.js"></script>
 
   <!-- Plantillas Base64: deben definir window.PLANTILLAS con claves:
        { amarillas, azules, fax, derechos_ingles, derechos_espanol } -->
@@ -159,7 +158,7 @@ input[type="time"] {
           <option value="NO APORTA" selected>NO APORTA</option>
           <option value="OTRO">OTRO</option>
         </select>
-        <input type="text" name="TELÉFONO" id="telefonoTexto" placeholder="Especificar" style="display:none;"></div>
+        <input type="tel" name="TELÉFONO" id="telefonoTexto" placeholder="Especificar" style="display:none;"></div>
       <div class="field-card" style="color: red;"><label>Fecha actual por defecto</label><input type="text" name="FECHA_GENERACION" id="fechaGeneracion"></div>
     </div>
 
@@ -282,14 +281,6 @@ input[type="time"] {
     🗂 Descarga de ZIP
   </button>
 
-	<!-- Botón DESCARGA ZIP CIFRADO -->
-  <button type="button" onclick="generarZipCifrado()" 
-          style="background: orange; color: white; padding: .5rem 1rem; font-size: 16px; 
-                 cursor: pointer; display: block; width: 100%; margin-bottom: 20px; 
-                 border: none; border-radius: 5px;">
-    🔒 Descargar ZIP Cifrado
-  </button>
-	
   <!-- Botón CARGAR XLSX (verde con icono de carpeta) -->
   <button type="button" onclick="cargarExcel()" 
           style="background: #28a745; color: white; padding: .5rem 1rem; font-size: 16px; 
@@ -922,42 +913,8 @@ msg.innerText=`✅ ZIP generado (${ok} ODT + XLSX)`;
         msg.innerText="❌ "+(err?.message||err);
       }
     }
-
-// Generar ZIP cifrado con contraseña fija "palote789133"
+  </script>
 <script>
-    // ... todas tus funciones actuales ...
-    
-    // 👇 REEMPLAZA tu función generarZipCifrado() actual por esta:
-    async function generarZipCifrado() {
-      const msg = document.getElementById("message");
-      msg.innerText = "Generando ZIP cifrado...";
-
-      try {
-        const blobWriter = new zip.BlobWriter("application/zip");
-        const writer = new zip.ZipWriter(blobWriter);
-
-        await writer.add("ejemplo.txt", new zip.TextReader("Contenido protegido en AES-256"), {
-          password: "palote789133",
-          encryptionStrength: 3,
-          level: 5
-        });
-
-        const blob = await writer.close();
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "documentos_protegidos.zip";
-        a.click();
-
-        msg.innerText = "✅ ZIP cifrado → abre con WinRAR/7-Zip y pide contraseña";
-      } catch (err) {
-        console.error(err);
-        msg.innerText = "❌ Error: " + (err?.message || err);
-      }
-    }
-    
-</script>
-<script>
-	
 document.addEventListener("DOMContentLoaded", function () {
   const hoy = new Date();
   const dia = String(hoy.getDate()).padStart(2, '0');
@@ -1016,6 +973,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
