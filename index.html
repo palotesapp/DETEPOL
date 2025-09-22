@@ -905,12 +905,20 @@ const xlsx = await generarXLSXUint8(filas,"Resumen");
 folder.file(excelName || `resumen_${base}.xlsx`, xlsx, {compression:"STORE"});
 
 // 🎁 Guardar ZIP
+
+// 📝 Tomar solo el primer delito
+let primerDelito = "";
+if (delitosElegidos.length > 0) {
+  primerDelito = delitosElegidos[0];
+} else {
+  primerDelito = data["DELITO"] || "";
+}
+
+const nombreZip = `${diligPartRaw} ${primerDelito} ${data["Nombre"]}.zip`.trim();
+
 const blob=await zip.generateAsync({type:"blob",compression:"STORE"});
-await saveBlob(blob, `${base}.zip`);
+await saveBlob(blob, nombreZip);
 msg.innerText=`✅ ZIP generado (${ok} ODT + XLSX)`;
-      }catch(err){
-        console.error(err);
-        msg.innerText="❌ "+(err?.message||err);
       }
     }
   </script>
@@ -973,6 +981,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
