@@ -107,9 +107,37 @@
   }
 
   /* Botones colores específicos */
-  #btnDescargar { background: #003366; } /* azul oscuro */
-  #btnCargar { background: #28a745; } /* verde */
-  #btnRefrescar { background: #007bff; } /* azul */
+  #btnDescargar { background: #00008B; } /* azul oscuro */
+  #btnCargar { background: #006400; } /* verde */
+  #btnRefrescar { background: #1E90FF; } /* azul */
+
+  #delitoOtroTexto::placeholder {
+  color: #ff0000; /* Cambia #ff0000 por el color que quieras */
+  opacity: 1;
+}
+
+	 h2 {
+  font-family: 'Arial', sans-serif;
+  font-size: 120%;
+  font-weight: bold;
+  text-align: center;
+  color: darkcyan; /* si quieres mantener el color darkcyan */
+}
+
+	 #marca-registro {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+  font-size: 10px;
+  color: rgba(255, 0, 0, 0.3); /* rojo con 50% de opacidad */
+  pointer-events: none;
+  user-select: none;
+  z-index: 9999;
+  font-family: Arial, sans-serif;
+  text-align: center; /* para centrar las líneas */
+  line-height: 1.2; /* espacio entre líneas */
+}
+	
 </style>
 
 </head>
@@ -117,7 +145,7 @@
   <h1>Registro de Detenidos</h1>
 
   <form id="registroForm" autocomplete="off">
-    <h2>Datos de Filiación</h2>
+    <h2> 🪪 Datos de Filiación 🪪 </h2>
     <div class="grid-rows">
       <div class="field-card" style="color: lightblue;">
         <label>Tipo Documento</label>
@@ -173,9 +201,9 @@
       <div class="field-card" style="color: red;"><label>Fecha actual por defecto</label><input type="text" name="FECHA_GENERACION" id="fechaGeneracion"></div>
     </div>
 
-    <h2>Hechos</h2>
+    <h2> 🚔 Hechos 🚔 </h2>
     <div class="grid-rows">
-      <div class="field-card" style="color: green;">
+      <div class="field-card" style="color: lightgreen;">
         <label>Delito(s)</label>
         <select id="delitoSelect">
           <option value="">-- Seleccionar --</option>
@@ -202,10 +230,10 @@
         </select>
 
         <!-- input para OTRO -->
-        <input type="text" id="delitoOtroTexto" placeholder="Especificar" style="display:none;">
+        <input type="text" id="delitoOtroTexto" placeholder="Especificar y pulsar Enter" style="display:none;">
 
         <!-- sub-globo inferior -->
-        <div id="delitosSeleccionados" style="margin-top:8px; padding:5px; border:1px solid #ccc; min-height:30px;">
+        <div id="delitosSeleccionados" style="color: red; margin-top:8px; padding:5px; border:1px solid #ccc; min-height:30px;">
           <em>Ningún delito seleccionado</em>
         </div>
       </div>
@@ -225,7 +253,7 @@
         <label>Indicios por los que se detiene</label><textarea name="INDICIOS POR LOS QUE SE DETIENE" id="indiciostexto" placeholder="Ej: Manifestaciones perjudicado, testigos..."></textarea>
       </div>
     </div>
-    <h2>Derechos</h2>
+    <h2> ⚖️ Derechos ⚖️ </h2>
     <div class="grid-rows">
       <div class="field-card" style="color: orange;">
         <label>Abogado</label>
@@ -244,12 +272,12 @@
         <input type="text" name="COMUNICARSE CON:" id="comunicarseTexto" placeholder="Nombre y teléfono" style="display:none;">
       </div>
       <div class="field-card" style="color: orange;">
-        <label>Informar de su detención a:</label>
-        <select name="INFORMAR DE SU DETENCION_OPCION" id="informardeOpcion">
+        <label>Informar de detención</label>
+        <select name="INFORMAR DE DETENCION_OPCION" id="informardeOpcion">
           <option value="NADIE" selected>NADIE</option>
           <option value="OTRO">OTRO</option>
         </select>
-        <input type="text" name="INFORMAR DE SU DETENCION:" id="informardeTexto" placeholder="Nombre y teléfono" style="display:none;">
+        <input type="text" name="INFORMAR DE DETENCION:" id="informardeTexto" placeholder="Nombre y teléfono" style="display:none;">
       </div>
 
       <div class="field-card" style="color: orange;">
@@ -511,8 +539,8 @@ function setSelectWithInput(selectName, excelValue) {
         if (qNorm === "NOMBREDELOSPADRES") { setSelectWithInput("NOMBRE_PADRES_OPCION", r); return; }
         if (qNorm === "ABOGADO") { setSelectWithInput("ABOGADO_OPCION", r); return; }
         if (qNorm === "COMUNICARSECON") { setSelectWithInput("COMUNICARSE CON_OPCION", r); return; }
-        if (qNorm === "INFORMARDESUDETENCION" || qNorm === "INFORMARDESUDETENCIONA" || qNorm === "INFORMARDESUDETENCIONA:") { 
-          setSelectWithInput("INFORMAR DE SU DETENCION_OPCION", r); 
+        if (qNorm === "INFORMARDEDETENCION" || qNorm === "INFORMARDEDETENCION" || qNorm === "INFORMARDEDETENCION") { 
+          setSelectWithInput("INFORMAR DE DETENCION_OPCION", r); 
           return; 
         }
         if (qNorm === "INTERPRETE") { setSelectWithInput("INTERPRETE_OPCION", r); return; }
@@ -588,11 +616,11 @@ function setSelectWithInput(selectName, excelValue) {
       const nomDisplay = (data["NOMBRE_PADRES_OPCION"] === "OTRO") ? (data["NOMBRE_PADRES"] || "") : (data["NOMBRE_PADRES_OPCION"] || "");
       const telDisplay = (data["TELÉFONO_OPCION"] === "OTRO") ? (data["TELÉFONO"] || "") : (data["TELÉFONO_OPCION"] || "");
       const abDisplay = (data["ABOGADO_OPCION"] === "OTRO") ? (data["ABOGADO"] || "") : (data["ABOGADO_OPCION"] || "");
-      const infDisplay = (data["INFORMAR DE SU DETENCION_OPCION"] === "OTRO") ? (data["INFORMAR DE SU DETENCION"] || "") : (data["INFORMAR DE SU DETENCION_OPCION"] || "");
+      const infDisplay = (data["INFORMAR DE DETENCION_OPCION"] === "OTRO") ? (data["INFORMAR DE DETENCION"] || "") : (data["INFORMAR DE DETENCION_OPCION"] || "");
 
       data["ABOGADO"] = abDisplay;
       data["COMUNICARSE CON:"] = (data["COMUNICARSE CON_OPCION"] === "OTRO") ? (data["COMUNICARSE CON:"] || "") : (data["COMUNICARSE CON_OPCION"] || ""); 
-      data["INFORMAR DE SU DETENCION"] = (data["INFORMAR DE SU DETENCION_OPCION"] === "OTRO") ? (data["INFORMAR DE SU DETENCION:"] || "") : (data["INFORMAR DE SU DETENCION_OPCION"] || "");
+      data["INFORMAR DE DETENCION"] = (data["INFORMAR DE DETENCION_OPCION"] === "OTRO") ? (data["INFORMAR DE DETENCION:"] || "") : (data["INFORMAR DE DETENCION_OPCION"] || "");
       data["NOMBRE_PADRES"] = nomDisplay;
       data["Nombre de los Padres"] = nomDisplay;
       data["DOMICILIO"] = (data["DOMICILIO_OPCION"] === "OTRO") ? (data["DOMICILIO"] || "") : (data["DOMICILIO_OPCION"] || "");
@@ -635,7 +663,7 @@ function setSelectWithInput(selectName, excelValue) {
         ["Indicios por los que se detiene", U(data["INDICIOS POR LOS QUE SE DETIENE"])],
         ["Abogado", U(data["ABOGADO"])],
         ["Comunicarse con", U(data["COMUNICARSE CON:"])],
-        ["Informar de su detención", U(data["INFORMAR DE SU DETENCION"])],
+        ["Informar de detención", U(data["INFORMAR DE DETENCION"])],
         ["Intérprete", U(interpreteDisplay)],
         ["Médico", U(data["MEDICO"])],
         ["Consulado", U(data["CONSULADO"])],
@@ -713,8 +741,15 @@ function setSelectWithInput(selectName, excelValue) {
   }
 </script>
 
+	<div id="marca-registro">
+  103<br>
+  JBN<br>
+  486
+</div>
+	
 </body>
 </html>
+
 
 
 
