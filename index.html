@@ -502,10 +502,7 @@ async function cargarExcel() {
         }
 
         // Condición mejorada para TIPO DOCUMENTO
-        if (qNorm.includes("TIPO") && qNorm.includes("DOCUMENTO")) {
-          setSelectWithInput("TIPO DOCUMENTO_OPCION", r);
-          return;
-        }
+        if (qNorm.includes("TIPO") && qNorm.includes("DOCUMENTO")) { setSelectWithInput("TIPO DOCUMENTO_OPCION", r); return; }
 
         // Casos con combo "NO APORTA/OTRO"
         if (qNorm === "DOMICILIO") { setSelectWithInput("DOMICILIO_OPCION", r); return; }
@@ -722,6 +719,7 @@ if (intOpt === "OTRO") {
 	
 </body>
 </html>
+
 
 
 
