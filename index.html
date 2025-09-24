@@ -502,9 +502,10 @@ function setSelectWithInput(selectName, excelValue) {
         if (qNorm === "NOMBREDELOSPADRES") { setSelectWithInput("NOMBRE_PADRES_OPCION", r); return; }
         if (qNorm === "ABOGADO") { setSelectWithInput("ABOGADO_OPCION", r); return; }
         if (qNorm === "COMUNICARSECON") { setSelectWithInput("COMUNICARSE CON_OPCION", r); return; }
-        if (qNorm === "INFORMARDEDETENCION" || qNorm === "INFORMARDEDETENCION" || qNorm === "INFORMARDEDETENCION") { 
-          setSelectWithInput("INFORMAR DE DETENCION_OPCION", r); 
-          return; 
+        if (qNorm.replace(/\s/g, '') === "INFORMARDEDETENCION") { 
+  setSelectWithInput("INFORMAR DE DETENCION_OPCION", r); 
+  return; 
+}
         }
         if (qNorm === "INTERPRETE") { setSelectWithInput("INTERPRETE_OPCION", r); return; }
 
@@ -712,6 +713,7 @@ function setSelectWithInput(selectName, excelValue) {
 	
 </body>
 </html>
+
 
 
 
